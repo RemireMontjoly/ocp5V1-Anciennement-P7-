@@ -10,13 +10,6 @@ import UIKit
 
 class ViewController: UIViewController {
     // MARK: - Properties
-    
-    enum PopUpAlertError: Error {
-        case addOperatorBeforeNumber
-        // case addEqualBeforeNumber
-        case addEqualAfterOperator
-    }
-    
     private var brain = CalculatorBrain()
 //    var isExpressionCorrect: Bool {
 //        if let stringNumber = brain.stringNumbers.last {
@@ -63,69 +56,43 @@ class ViewController: UIViewController {
         }
     }
     
-    func checkCorrectInput() throws {
-        let stringNumber = brain.stringNumbers.last!
-        if stringNumber.isEmpty && brain.stringNumbers.count == 1 {
-            throw PopUpAlertError.addEqualAfterOperator
-        }
-        if stringNumber.isEmpty {
-            throw PopUpAlertError.addOperatorBeforeNumber
-        }
-    }
-    
     @IBAction func plus() {
         do {
-            try checkCorrectInput()
-        } catch PopUpAlertError.addOperatorBeforeNumber {
+            try brain.addPlusOperator()
+            updateDisplay()
+        } catch CalculatorBrain.SyntaxError.operatorBeforeNumber {
             Alert.showAlert(title: "Zéro", message: "Expression incorrecte !", vc: self)
-            return
+        } catch {
+            Alert.showAlert(title: "Zéro", message: error.localizedDescription , vc: self)
         }
-        catch {
-            print("AnyOther error")
-        }
-        brain.addPlusOperator()
-        updateDisplay()
     }
     
     @IBAction func minus() {
         do {
-            try checkCorrectInput()
-        } catch PopUpAlertError.addOperatorBeforeNumber {
+            try brain.addMinusOperator()
+            updateDisplay()
+        } catch CalculatorBrain.SyntaxError.operatorBeforeNumber {
             Alert.showAlert(title: "Zéro", message: "Expression incorrecte !", vc: self)
-            return
+        } catch {
+            Alert.showAlert(title: "Zéro", message: error.localizedDescription, vc: self)
         }
-        catch {
-            print("AnyOther error")
-        }
-        brain.addMinusOperator()
-        updateDisplay()
     }
     
     @IBAction func equal() {
-        calculateTotal()
+        do {
+            let total = try brain.calculateTotal()
+            textView.text = textView.text + "=\(total)"
+            brain.clear()
+        } catch CalculatorBrain.SyntaxError.operatorBeforeNumber {
+            Alert.showAlert(title: "Zéro!", message: "Entrez une expression correcte !", vc: self)
+        } catch CalculatorBrain.SyntaxError.equalAfterOperator {
+            Alert.showAlert(title: "Zéro!", message: "Démarrez un nouveau calcul !", vc: self)
+        } catch {
+            Alert.showAlert(title: "Zéro", message: error.localizedDescription, vc: self)
+        }
     }
     
     // MARK: - Methods
-    
-    func calculateTotal() {
-        do {
-            try checkCorrectInput()
-        } catch PopUpAlertError.addOperatorBeforeNumber {
-            Alert.showAlert(title: "Zéro!", message: "Entrez une expression correcte !", vc: self)
-            return
-        } catch PopUpAlertError.addEqualAfterOperator {
-            Alert.showAlert(title: "Zéro!", message: "Démarrez un nouveau calcul !", vc: self)
-            return
-        }       catch {
-            print("AnyOther error")
-        }
-        //        if !isExpressionCorrect {
-        //            return
-        //        }
-        let total = brain.calculateTotal()
-        textView.text = textView.text + "=\(total)"
-        brain.clear()
-    }
     
     func updateDisplay() {
         var text = ""
