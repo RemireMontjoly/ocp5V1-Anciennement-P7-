@@ -11,35 +11,7 @@ import UIKit
 class ViewController: UIViewController {
     // MARK: - Properties
     private var brain = CalculatorBrain()
-//    var isExpressionCorrect: Bool {
-//        if let stringNumber = brain.stringNumbers.last {
-//            if stringNumber.isEmpty {
-//                if brain.stringNumbers.count == 1 {
-//                    let alertVC = UIAlertController(title: "Zéro!", message: "Démarrez un nouveau calcul !", preferredStyle: .alert)
-//                    alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-//                    self.present(alertVC, animated: true, completion: nil)
-//                } else {
-//                    let alertVC = UIAlertController(title: "Zéro!", message: "Entrez une expression correcte !", preferredStyle: .alert)
-//                    alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-//                    self.present(alertVC, animated: true, completion: nil)
-//                }
-//                return false
-//            }
-//        }
-//        return true
-//    }
-    //     var canAddOperator: Bool {
-    //        if let stringNumber = brain.stringNumbers.last {
-    //            if stringNumber.isEmpty {
-    //                let alertVC = UIAlertController(title: "Zéro!", message: "Expression incorrecte !", preferredStyle: .alert)
-    //                alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
-    //                self.present(alertVC, animated: true, completion: nil)
-    //                return false
-    //            }
-    //        }
-    //        return true
-    //    }
-    
+
     // MARK: - Outlets
     
     @IBOutlet weak var textView: UITextView!
@@ -83,14 +55,20 @@ class ViewController: UIViewController {
             let total = try brain.calculateTotal()
             textView.text = textView.text + "=\(total)"
             brain.clear()
-        } catch CalculatorBrain.SyntaxError.operatorBeforeNumber {
+        } catch CalculatorBrain.SyntaxError.expressionIncorrect {
             Alert.showAlert(title: "Zéro!", message: "Entrez une expression correcte !", vc: self)
-        } catch CalculatorBrain.SyntaxError.equalAfterOperator {
+        } catch CalculatorBrain.SyntaxError.noExpression {
             Alert.showAlert(title: "Zéro!", message: "Démarrez un nouveau calcul !", vc: self)
         } catch {
             Alert.showAlert(title: "Zéro", message: error.localizedDescription, vc: self)
         }
     }
+
+    @IBAction func clearScreen(_ sender: UIButton) {
+        brain.clear()
+        textView.text = ""
+    }
+    
     
     // MARK: - Methods
     

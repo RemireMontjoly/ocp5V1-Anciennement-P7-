@@ -12,7 +12,7 @@ import UIKit
 class Alert {
     
     class func showAlert(title: String, message: String, vc: UIViewController) {
-        let alertVC = UIAlertController(title: "Zéro!", message: "Expression incorrecte !", preferredStyle: .alert)
+        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
         alertVC.addAction(UIAlertAction(title: "OK", style: .cancel, handler: nil))
         vc.present(alertVC, animated: true, completion: nil)
     }

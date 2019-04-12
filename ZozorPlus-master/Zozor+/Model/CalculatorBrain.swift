@@ -12,7 +12,8 @@ class CalculatorBrain {
     
     enum SyntaxError: Error {
         case operatorBeforeNumber
-        case equalAfterOperator
+        case noExpression
+        case expressionIncorrect
     }
     
     var stringNumbers: [String] = [String()]
@@ -48,11 +49,11 @@ class CalculatorBrain {
         if let stringNumber = stringNumbers.last,
             stringNumber.isEmpty,
             stringNumbers.count == 1 {
-            throw SyntaxError.equalAfterOperator
+            throw SyntaxError.noExpression
         }
         if let stringNumber = stringNumbers.last,
             stringNumber.isEmpty {
-            throw SyntaxError.operatorBeforeNumber
+            throw SyntaxError.expressionIncorrect
         }
         var total = 0
         for (i, stringNumber) in stringNumbers.enumerated() {
