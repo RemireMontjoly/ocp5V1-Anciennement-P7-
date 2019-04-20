@@ -215,6 +215,7 @@
                                                             <color key="titleColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                         </state>
                                                         <connections>
+                                                            <action selector="comma" destination="BYZ-38-t0r" eventType="touchUpInside" id="Iet-Cx-Gmd"/>
                                                             <action selector="tappedNumberButton:" destination="BYZ-38-t0r" eventType="touchUpInside" id="bs8-U3-DST"/>
                                                         </connections>
                                                     </button>

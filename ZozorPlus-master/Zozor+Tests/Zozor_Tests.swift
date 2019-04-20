@@ -17,85 +17,52 @@ class Zozor_Tests: XCTestCase {
         super.setUp()
         brain = CalculatorBrain()
     }
-    override func tearDown() {
-        brain = nil
-        super.tearDown()
-    }
 
-    func createRandomNumber() -> Int {
-        let randomNumber = Int.random(in: 0 ... 10)
-        return randomNumber
-    }
     // MARK: - test func addNewNumber()
     func testGivenEmptyStringInNumbersArray_WhenAddNewNumber_ThenNumberIsAddedAtTheLastIndex() {
 
-        let number = createRandomNumber()
-        let stringNumber = String(number)
+        brain.addNewNumber(3)
+        brain.addNewNumber(7)
 
-        brain.addNewNumber(number)
-
-        XCTAssertEqual(brain.stringNumbers.last, stringNumber)
+        XCTAssertEqual(brain.stringNumbers.last, "37")
     }
-    // MARK: - test: func addPlusOperator() - FIRST version *****************************
-    // Throwing error
-    func testAddPlusOperatorThatThrowsError() {
-
-        XCTAssertThrowsError(try brain.addPlusOperator()) {
-            error in XCTAssertEqual(error as! CalculatorBrain.SyntaxError , .operatorBeforeNumber)
-        }
-    }
-    // Not throwing error
-    func testAddPlusOperatorThatDoesntThrowError() {
-
-        brain.addNewNumber(createRandomNumber())
-
-        XCTAssertNoThrow(try brain.addPlusOperator(), "No Error!")
-    }
-    // MARK: - Second version ***************************************************
+    // MARK: - test: func addPlusOperator()  *****************************
     // Throwing error
     func testGivenNoNumberTapped_WhenAddPlusOperator_ThenThrowError() {
 
-        do {
-            let _ = try brain.addPlusOperator()
-
-        } catch let error as CalculatorBrain.SyntaxError {
-            XCTAssertEqual(error, CalculatorBrain.SyntaxError.operatorBeforeNumber)
-        } catch {
-            XCTFail("Unidentififed error thrown: \(error.localizedDescription)")
+        XCTAssertThrowsError(try brain.addPlusOperator()) { error in
+            XCTAssertTrue(error is CalculatorBrain.SyntaxError)
+            XCTAssertEqual(error as! CalculatorBrain.SyntaxError , .operatorBeforeNumber)
         }
     }
     // Not throwing error
     func testGivenNumberIsTapped_WhenAddPlusOperator_ThenAddOperatorAndAddEmptyStringToTheirArray() {
 
-        brain.addNewNumber(createRandomNumber())
+        brain.addNewNumber(4)
 
-        do {
-            try brain.addPlusOperator()
-            XCTAssertEqual(brain.stringNumbers.last, "")
-            XCTAssertEqual(brain.operators.last, "+")
-        } catch {
-            XCTFail("Unidentififed error thrown: \(error.localizedDescription)")
-        }
+        XCTAssertNoThrow(try brain.addPlusOperator(), "No Error!")
     }
+
     // MARK: - test:func addMinusOperator()  *****************************************
     // Throwing error
-    func testAddMinusOperatorThatThrowsError() {
+    func testGivenNoNumberTapped_WhenAddMinusOperator_ThenThrowError() {
 
-        XCTAssertThrowsError(try brain.addMinusOperator()) {
-            error in XCTAssertEqual(error as! CalculatorBrain.SyntaxError , .operatorBeforeNumber)
+        XCTAssertThrowsError(try brain.addMinusOperator()) { error in
+            XCTAssertTrue(error is CalculatorBrain.SyntaxError)
+            XCTAssertEqual(error as! CalculatorBrain.SyntaxError , .operatorBeforeNumber)
         }
     }
     // Not throwing error
-    func testAddMinusOperatorThatDoesntThrowError() {
+    func testGivenNumberIsTapped_WhenAddMinusOperator_ThenAddOperatorAndEmptyStringToTheirArray() {
 
-        brain.addNewNumber(createRandomNumber())
+        brain.addNewNumber(4)
 
         XCTAssertNoThrow(try brain.addMinusOperator(), "No Error!")
     }
 
     func testGivenCalculationIsFinished_WhenEqualIsTapped_ThenResetArrays() {
-        brain.stringNumbers += ["1"]
-        brain.operators += ["-"]
+        brain.stringNumbers.append("3")
+        brain.operators.append("-")
 
         brain.clear()
 
@@ -103,11 +70,33 @@ class Zozor_Tests: XCTestCase {
         XCTAssertEqual(brain.operators, ["+"])
     }
 
-    func testGivenAnExpression_WhenCalculateTotal_ThenReturnResult() {
-        // 1/ throw SyntaxError.noExpression
-        // 2/ throw SyntaxError.expressionIncorrect
-        // 3/ total += if ...
-        // 4/ total -= if ...
+    // MARK: - test: func calculateTotal
+    // 1. Throwing error: noExpression
+    func testGivenNoExpressionOnScreen_WhenCalculateTotal_ThenThrowError() {
+
+        XCTAssertThrowsError(try brain.calculateTotal()) { error in
+            XCTAssertTrue(error is CalculatorBrain.SyntaxError)
+            XCTAssertEqual(error as! CalculatorBrain.SyntaxError, .noExpression)
+        }
+    }
+    // 2. Throwing error: expressionIncorrect
+    func testGivenOperatorOnScreen_WhenCalculateTotal_ThenThrowError() {
+        brain.addNewNumber(3)
+        XCTAssertNoThrow(try brain.addMinusOperator(), "No Error!")
+
+        XCTAssertThrowsError(try brain.calculateTotal()) { error in
+            XCTAssertTrue(error is CalculatorBrain.SyntaxError)
+            XCTAssertEqual(error as! CalculatorBrain.SyntaxError, .expressionIncorrect)
+        }
+    }
+    // 3. return total
+    func testGivenACorrectExpression_WhenCalculateTotal_ThenReturnResult() {
+        brain.addNewNumber(4)
+        XCTAssertNoThrow(try brain.addMinusOperator(), "No Error!")
+        brain.addNewNumber(3)
+
+        XCTAssertEqual(try brain.calculateTotal(), 1)
+
     }
 
 }

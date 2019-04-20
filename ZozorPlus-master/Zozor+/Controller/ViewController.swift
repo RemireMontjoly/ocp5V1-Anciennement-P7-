@@ -64,6 +64,17 @@ class ViewController: UIViewController {
         }
     }
 
+    @IBAction func comma() {
+        do {
+            try brain.addComma()
+            updateDisplay()
+        } catch CalculatorBrain.SyntaxError.operatorBeforeNumber {
+            Alert.showAlert(title: "Zéro", message: "Expression incorrecte !", vc: self)
+        } catch {
+            Alert.showAlert(title: "Zéro", message: error.localizedDescription, vc: self)
+        }
+    }
+
     @IBAction func clearScreen(_ sender: UIButton) {
         brain.clear()
         textView.text = ""

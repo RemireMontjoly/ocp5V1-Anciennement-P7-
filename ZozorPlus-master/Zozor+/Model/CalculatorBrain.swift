@@ -44,8 +44,22 @@ class CalculatorBrain {
         operators.append("-")
         stringNumbers.append("")
     }
-    
-    func calculateTotal() throws -> Int {
+
+    func addComma() throws {
+        if let stringNumber = stringNumbers.last,
+            stringNumber.isEmpty {
+            throw SyntaxError.operatorBeforeNumber
+        }
+        if let stringNumber = stringNumbers.last,
+            stringNumber.contains(".") {
+            throw SyntaxError.operatorBeforeNumber
+        }
+        stringNumbers[stringNumbers.count - 1] += "."
+    }
+
+
+
+    func calculateTotal() throws -> Double {
         if let stringNumber = stringNumbers.last,
             stringNumber.isEmpty,
             stringNumbers.count == 1 {
@@ -55,9 +69,9 @@ class CalculatorBrain {
             stringNumber.isEmpty {
             throw SyntaxError.expressionIncorrect
         }
-        var total = 0
+        var total = 0.0
         for (i, stringNumber) in stringNumbers.enumerated() {
-            if let number = Int(stringNumber) {
+            if let number = Double(stringNumber) {
                 if operators[i] == "+" {
                     total += number
                 } else if operators[i] == "-" {
